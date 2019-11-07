@@ -1,21 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Description>A simple C# wrapper to PushBullet's HTTP API.</Description>
-    <PackageProjectUrl>https://github.com/ajtatum/PushBulletSharp.Core</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/ajtatum/PushBulletSharp.Core</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>PushBullet</PackageTags>
-    <Copyright>Copyright 2019</Copyright>
-    <Authors>ajtatum</Authors>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <PackageIconUrl>https://raw.githubusercontent.com/ajtatum/PushBulletSharp.Core/master/pushbulletsharp-logo.png</PackageIconUrl>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <Description>A simple C# wrapper to PushBullet's HTTP API.</Description>
+        <PackageProjectUrl>https://github.com/ajtatum/PushBulletSharp.Core</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ajtatum/PushBulletSharp.Core</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>PushBullet</PackageTags>
+        <Copyright>Copyright 2019</Copyright>
+        <Authors>ajtatum</Authors>
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageIconUrl>https://raw.githubusercontent.com/ajtatum/PushBulletSharp.Core/master/pushbulletsharp-logo.png</PackageIconUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BouncyCastle.NetCore" Version="1.8.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BouncyCastle.NetCore" Version="1.8.5" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    </ItemGroup>
 
 </Project>

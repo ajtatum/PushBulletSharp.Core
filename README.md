@@ -1,6 +1,9 @@
 PushBulletSharp.Core
 ===============
 
+[![Build status](https://ci.appveyor.com/api/projects/status/2um6nsg5bub058nv/branch/master?svg=true)](https://ci.appveyor.com/project/ajtatum/babouextensions/branch/master)
+
+
 This is a port of [PushbulletSharp](https://github.com/adamyeager/PushbulletSharp) by [adamyeager](https://github.com/adamyeager).
 
 This is a simple PushBullet wrapper written in C#. You can easily add this library to your project via [Nuget](https://www.nuget.org/packages/PushBulletSharp.Core/).
