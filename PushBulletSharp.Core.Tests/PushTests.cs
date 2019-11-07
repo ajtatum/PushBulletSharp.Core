@@ -70,11 +70,11 @@ namespace PushBulletSharp.Core.Tests
         /// PushBullets the push note test.
         /// </summary>
         [TestMethod]
-        public void PushBulletPushNoteTest()
+        public async void PushBulletPushNoteTest()
         {
             try
             {
-                var devices = Client.CurrentUsersDevices();
+                var devices = await Client.CurrentUsersDevices();
                 Assert.IsNotNull(devices);
 
                 var device = devices.Devices.FirstOrDefault(o => o.Nickname == TestHelper.GetConfig("Device"));
@@ -102,11 +102,11 @@ namespace PushBulletSharp.Core.Tests
         /// This will result in all active devices receiving the push.
         /// </summary>
         [TestMethod]
-        public void PushBulletPushNoteByEmailTest()
+        public async void PushBulletPushNoteByEmailTest()
         {
             try
             {
-                var currentUserInformation = Client.CurrentUsersInformation();
+                var currentUserInformation = await Client.CurrentUsersInformation();
                 Assert.IsNotNull(currentUserInformation);
 
                 PushNoteRequest reqeust = new PushNoteRequest()
@@ -129,11 +129,11 @@ namespace PushBulletSharp.Core.Tests
         /// PushBullets the push link test.
         /// </summary>
         [TestMethod]
-        public void PushBulletPushLinkTest()
+        public async void PushBulletPushLinkTest()
         {
             try
             {
-                var devices = Client.CurrentUsersDevices();
+                var devices = await Client.CurrentUsersDevices();
                 Assert.IsNotNull(devices);
 
                 var device = devices.Devices.FirstOrDefault(o => o.Nickname == TestHelper.GetConfig("Device"));
@@ -160,11 +160,11 @@ namespace PushBulletSharp.Core.Tests
         /// PushBullets the push file test.
         /// </summary>
         [TestMethod]
-        public void PushBulletPushFileTest()
+        public async void PushBulletPushFileTest()
         {
             try
             {
-                var devices = Client.CurrentUsersDevices();
+                var devices = await Client.CurrentUsersDevices();
                 Assert.IsNotNull(devices);
 
                 var device = devices.Devices.FirstOrDefault(o => o.Nickname == TestHelper.GetConfig("Device"));
@@ -191,7 +191,7 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesAllSince()
+        public async void GetPushesAllSince()
         {
             try
             {
@@ -200,11 +200,11 @@ namespace PushBulletSharp.Core.Tests
                     ModifiedDate = new DateTime(2015,10,15,20,10,40,32),
                     Active = true
                 };
-                var results = Client.GetPushes(filter);
+                var results = await Client.GetPushes(filter);
 
                 if (!string.IsNullOrWhiteSpace(results.Cursor))
                 {
-                    results = Client.GetPushes(new PushResponseFilter(results.Cursor));
+                    results = await Client.GetPushes(new PushResponseFilter(results.Cursor));
                 }
             }
             catch (Exception ex)
@@ -245,15 +245,15 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesAllWithCursor()
+        public async void GetPushesAllWithCursor()
         {
             try
             {
-                PushResponseContainer results = Client.GetPushes(new PushResponseFilter());
+                PushResponseContainer results = await Client.GetPushes(new PushResponseFilter());
 
                 while (!string.IsNullOrWhiteSpace(results.Cursor))
                 {
-                    results = Client.GetPushes(new PushResponseFilter(results.Cursor));
+                    results = await Client.GetPushes(new PushResponseFilter(results.Cursor));
                 }
             }
             catch (Exception ex)
@@ -299,7 +299,7 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesSinceLastPush()
+        public async void GetPushesSinceLastPush()
         {
             try
             {
@@ -312,7 +312,7 @@ namespace PushBulletSharp.Core.Tests
                 var response = Client.PushNote(request);
 
                 // Get modified date of last push
-                var results = Client.GetPushes(new PushResponseFilter() { Limit = 1 });
+                var results = await Client.GetPushes(new PushResponseFilter() { Limit = 1 });
                 var lastModified = results.Pushes[0].Modified;
 
                 Thread.Sleep(1000);
@@ -327,7 +327,7 @@ namespace PushBulletSharp.Core.Tests
                 response = Client.PushNote(request);
 
                 // Get pushes since first one, + one millisecond because otherwise we can get back our previous received push...
-                results = Client.GetPushes(new PushResponseFilter() { ModifiedDate = lastModified.AddMilliseconds(1)});
+                results = await Client.GetPushes(new PushResponseFilter() { ModifiedDate = lastModified.AddMilliseconds(1)});
                 //should have only the second push
                 Assert.AreEqual(1, results.Pushes.Count);
                 Assert.AreEqual(secondBody, results.Pushes[0].Body);

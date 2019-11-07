@@ -50,11 +50,11 @@ namespace PushBulletSharp.Core.Tests
         /// Updates the chat mute true test.
         /// </summary>
         [TestMethod]
-        public void UpdateChatMuteTrueTest()
+        public async void UpdateChatMuteTrueTest()
         {
             try
             {
-                var chats = Client.CurrentUsersChats();
+                var chats = await Client.CurrentUsersChats();
 
                 if (chats != null && chats.Chats.Count > 0)
                 {
@@ -83,11 +83,11 @@ namespace PushBulletSharp.Core.Tests
         /// Updates the chat mute false test.
         /// </summary>
         [TestMethod]
-        public void UpdateChatMuteFalseTest()
+        public async void UpdateChatMuteFalseTest()
         {
             try
             {
-                var chats = Client.CurrentUsersChats();
+                var chats = await Client.CurrentUsersChats();
 
                 if (chats != null && chats.Chats.Count > 0)
                 {
@@ -116,11 +116,11 @@ namespace PushBulletSharp.Core.Tests
         /// Deletes the chat test.
         /// </summary>
         [TestMethod]
-        public void DeleteChatTest()
+        public async void DeleteChatTest()
         {
             try
             {
-                var chats = Client.CurrentUsersChats();
+                var chats = await Client.CurrentUsersChats();
 
                 if (chats != null && chats.Chats.Count > 0)
                 {
@@ -133,7 +133,7 @@ namespace PushBulletSharp.Core.Tests
                             ChatIden = firstChat.Iden
                         };
 
-                        Client.DeleteChat(request);
+                        await Client.DeleteChat(request);
                     }
                 }
             }

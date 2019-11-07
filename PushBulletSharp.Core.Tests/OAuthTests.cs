@@ -7,7 +7,7 @@ namespace PushBulletSharp.Core.Tests
     public class OAuthTests : TestBase
     {
         [TestMethod]
-        public void RequestTokenTest()
+        public async void RequestTokenTest()
         {
             try
             {
@@ -18,10 +18,10 @@ namespace PushBulletSharp.Core.Tests
                     Code = TestHelper.GetConfig("OAuth:Code")
                 };
 
-                var result = Client.RequestToken(request);
+                var result = await Client.RequestToken(request);
 
                 Client.AccessToken = result.AccessToken;
-                var oauthUserInformation = Client.CurrentUsersInformation();
+                var oauthUserInformation = await Client.CurrentUsersInformation();
                 var oauthTestPushResults = Client.PushNote(new Models.Requests.PushNoteRequest()
                 {
                     Title = "OAuth Push Test",

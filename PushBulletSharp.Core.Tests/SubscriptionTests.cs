@@ -83,16 +83,16 @@ namespace PushBulletSharp.Core.Tests
         /// PushBullets the unsubscribe from channel test.
         /// </summary>
         [TestMethod]
-        public void PushBulletUnsubscribeFromChannelTest()
+        public async void PushBulletUnsubscribeFromChannelTest()
         {
             try
             {
-                var subscriptions = Client.CurrentUsersSubscriptions();
-                var target = subscriptions.Subscriptions.Where(o => o.Channel.Tag == "pushbullet").FirstOrDefault();
+                var subscriptions = await Client.CurrentUsersSubscriptions();
+                var target = subscriptions.Subscriptions.FirstOrDefault(o => o.Channel.Tag == "pushbullet");
                 Assert.IsNotNull(target, "Could not find the target Channel");
 
                 Assert.IsTrue(target.Active, "Target is not active. Cannot unsubscribe.");
-                Client.UnsubscribeFromChannel(target.Iden);
+                await Client.UnsubscribeFromChannel(target.Iden);
             }
             catch (Exception ex)
             {

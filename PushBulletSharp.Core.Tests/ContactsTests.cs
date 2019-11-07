@@ -72,11 +72,11 @@ namespace PushBulletSharp.Core.Tests
         /// PushBullets the update contact test.
         /// </summary>
         [TestMethod]
-        public void PushBulletUpdateContactTest()
+        public async void PushBulletUpdateContactTest()
         {
             try
             {
-                var contacts = Client.CurrentUsersContacts();
+                var contacts = await Client.CurrentUsersContacts();
                 Assert.IsNotNull(contacts);
 
                 var contact = contacts.Contacts.FirstOrDefault(o => o.Email == "some.person@aninternetwebsite.com");
@@ -102,14 +102,14 @@ namespace PushBulletSharp.Core.Tests
         /// PushBullets the delete contact test.
         /// </summary>
         [TestMethod]
-        public void PushBulletDeleteContactTest()
+        public async void PushBulletDeleteContactTest()
         {
             try
             {
-                var contacts = Client.CurrentUsersContacts();
+                var contacts = await Client.CurrentUsersContacts();
                 Assert.IsNotNull(contacts);
 
-                var contact = contacts.Contacts.Where(o => o.Email == "some.person@aninternetwebsite.com").FirstOrDefault();
+                var contact = contacts.Contacts.FirstOrDefault(o => o.Email == "some.person@aninternetwebsite.com");
                 Assert.IsNotNull(contact);
 
                 DeleteContactRequest request = new DeleteContactRequest()
@@ -117,7 +117,7 @@ namespace PushBulletSharp.Core.Tests
                     ContactIden = contact.Iden
                 };
 
-                Client.DeleteContact(request);
+                await Client.DeleteContact(request);
             }
             catch (Exception ex)
             {

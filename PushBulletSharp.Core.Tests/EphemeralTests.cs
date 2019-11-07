@@ -33,13 +33,13 @@ namespace PushBulletSharp.Core.Tests
         /// Sets the user information up for tests.
         /// </summary>
         [TestInitialize]
-        public void SetUserInformationUpForTests()
+        public async void SetUserInformationUpForTests()
         {
-            CurrentUser = Client.CurrentUsersInformation();
-            var userDevices = Client.CurrentUsersDevices(true);
+            CurrentUser = await Client.CurrentUsersInformation().ConfigureAwait(true);
+            var userDevices = await Client.CurrentUsersDevices(true).ConfigureAwait(true);
             if (userDevices != null)
             {
-                FirstActiveDevice = userDevices.Devices.Where(o => o.HasSMS).FirstOrDefault();
+                FirstActiveDevice = userDevices.Devices.FirstOrDefault(o => o.HasSMS);
             }
         }
 

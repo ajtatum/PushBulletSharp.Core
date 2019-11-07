@@ -20,14 +20,18 @@ using PushBulletSharp.Core.Extensions;
 
 namespace PushBulletSharp.Core
 {
+    /// <summary>
+    /// PushBullet Client
+    /// </summary>
     public class PushBulletClient
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PushBulletManager"/> class.
+        /// Creates a new PushBulletClient class.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
+        /// <param name="timeZoneInfo"></param>
         /// <exception cref="System.ArgumentNullException">accessToken</exception>
         public PushBulletClient(string accessToken, TimeZoneInfo timeZoneInfo = null)
         {
@@ -38,18 +42,25 @@ namespace PushBulletSharp.Core
 
             if (timeZoneInfo != null)
             {
-                _timeZoneInfo = timeZoneInfo;
+                TimeZoneInfo = timeZoneInfo;
             }
 
-            _accessToken = accessToken;
+            AccessToken = accessToken;
         }
 
 
+        /// <summary>
+        /// Creates a new PushBulletClient
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="encryptionPassword"></param>
+        /// <param name="timeZoneInfo"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public PushBulletClient(string accessToken, string encryptionPassword, TimeZoneInfo timeZoneInfo = null) : this(accessToken, timeZoneInfo)
         {
             if (string.IsNullOrWhiteSpace(encryptionPassword))
             {
-                throw new ArgumentNullException("encryptionPassword");
+                throw new ArgumentNullException(nameof(encryptionPassword));
             }
 
             SetEncryptionKey(encryptionPassword);
@@ -61,54 +72,33 @@ namespace PushBulletSharp.Core
 
         #region properties
 
-        private string _accessToken;
         /// <summary>
         /// Gets the access token.
         /// </summary>
         /// <value>
         /// The access token.
         /// </value>
-        public string AccessToken
-        {
-            get
-            {
-                return _accessToken;
-            }
-            set
-            {
-                _accessToken = value;
-            }
-        }
+        public string AccessToken { get; set; }
 
 
         private string _encryptionKey;
+        /// <summary>
+        /// Gets the Encryption Key
+        /// </summary>
         public string EncryptionKey
         {
-            get
-            {
-                return _encryptionKey;
-            }
-            set
-            {
-                SetEncryptionKey(value);
-            }
+            get => _encryptionKey;
+            set => SetEncryptionKey(value);
         }
 
 
-        private TimeZoneInfo _timeZoneInfo = TimeZoneInfo.Utc;
         /// <summary>
         /// Gets the time zone information.
         /// </summary>
         /// <value>
         /// The time zone information.
         /// </value>
-        internal TimeZoneInfo TimeZoneInfo
-        {
-            get
-            {
-                return _timeZoneInfo;
-            }
-        }
+        internal TimeZoneInfo TimeZoneInfo { get; } = TimeZoneInfo.Utc;
 
         #endregion properties
 
@@ -122,21 +112,15 @@ namespace PushBulletSharp.Core
         /// Currents the users information.
         /// </summary>
         /// <returns></returns>
-        public User CurrentUsersInformation()
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<User> CurrentUsersInformation()
         {
-            try
-            {
-                #region processing
+            #region processing
 
-                User result = GetRequest<User>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.UsersUrls.Me));
-                return result;
+            var result = await GetRequest<User>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.UsersUrls.Me)).ConfigureAwait(false);
+            return result;
 
-                #endregion processing
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            #endregion processing
         }
 
 
@@ -145,32 +129,26 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="showActiveOnly">if set to <c>true</c> [show active only].</param>
         /// <returns></returns>
-        public UserDevices CurrentUsersDevices(bool showActiveOnly = false)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<UserDevices> CurrentUsersDevices(bool showActiveOnly = false)
         {
-            try
+            #region pre-processing
+
+            var additionalQuery = string.Empty;
+
+            if (showActiveOnly)
             {
-                #region pre-processing
-
-                string additionalQuery = string.Empty;
-
-                if (showActiveOnly)
-                {
-                    additionalQuery = "?active=true";
-                }
-
-                #endregion end pre-processing
-
-                #region processing
-
-                UserDevices result = GetRequest<UserDevices>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.DevicesUrls.Me, additionalQuery).Trim());
-                return result;
-
-                #endregion processing
+                additionalQuery = "?active=true";
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            #endregion end pre-processing
+
+            #region processing
+
+            var result = await GetRequest<UserDevices>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.DevicesUrls.Me, additionalQuery).Trim()).ConfigureAwait(false);
+            return result;
+
+            #endregion processing
         }
 
         #endregion User Information Methods
@@ -182,22 +160,16 @@ namespace PushBulletSharp.Core
         /// Currents the users chats.
         /// </summary>
         /// <returns></returns>
-        public UserChats CurrentUsersChats()
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<UserChats> CurrentUsersChats()
         {
-            try
-            {
-                #region processing
+            #region processing
 
-                var basicResponse = GetRequest<BasicChatsResponse>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ChatsUrls.Chats).Trim());
-                UserChats result = ConvertBasicChatResponse(basicResponse);
-                return result;
+            var basicResponse = await GetRequest<BasicChatsResponse>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ChatsUrls.Chats).Trim()).ConfigureAwait(false);
+            var result = ConvertBasicChatResponse(basicResponse);
+            return result;
 
-                #endregion processing
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            #endregion processing
         }
 
 
@@ -207,36 +179,30 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">create chat request</exception>
-        public Chat CreateChat(CreateChatRequest request)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<Chat> CreateChat(CreateChatRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentException("create chat request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Email))
-                {
-                    throw new Exception(PushBulletConstants.CreateChatErrorMessages.ErrorEmailProperty);
-                }
-
-                #endregion pre-processing
-
-                #region processing
-
-                BasicChat basicResponse = PostRequest<BasicChat>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ChatsUrls.Chats), request);
-                Chat response = ConvertBasicChat(basicResponse);
-                return response;
-
-                #endregion processing
+                throw new ArgumentException("create chat request");
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.Email))
             {
-                throw;
+                throw new ArgumentException(PushBulletConstants.CreateChatErrorMessages.ErrorEmailProperty);
             }
+
+            #endregion pre-processing
+
+            #region processing
+
+            var basicResponse = await PostRequest<BasicChat>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ChatsUrls.Chats), request).ConfigureAwait(false);
+            var response = ConvertBasicChat(basicResponse);
+            return response;
+
+            #endregion processing
         }
 
 
@@ -246,37 +212,30 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">update chat request</exception>
-        /// <exception cref="System.Exception"></exception>
-        public Chat UpdateChat(UpdateChatRequest request)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<Chat> UpdateChat(UpdateChatRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentException("update chat request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Iden))
-                {
-                    throw new Exception(PushBulletConstants.UpdateChatErrorMessages.ErrorIdenProperty);
-                }
-
-                #endregion pre-processing
-
-                #region processing
-
-                BasicChat basicResponse = PostRequest<BasicChat>(string.Format("{0}{1}/{2}", PushBulletConstants.BaseUrl, PushBulletConstants.ChatsUrls.Chats, request.Iden), request);
-                Chat response = ConvertBasicChat(basicResponse);
-                return response;
-
-                #endregion processing
+                throw new ArgumentException("update chat request");
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.Iden))
             {
-                throw;
+                throw new ArgumentException(PushBulletConstants.UpdateChatErrorMessages.ErrorIdenProperty);
             }
+
+            #endregion pre-processing
+
+            #region processing
+
+            var basicResponse = await PostRequest<BasicChat>($"{PushBulletConstants.BaseUrl}{PushBulletConstants.ChatsUrls.Chats}/{request.Iden}", request).ConfigureAwait(false);
+            var response = ConvertBasicChat(basicResponse);
+            return response;
+
+            #endregion processing
         }
 
 
@@ -285,36 +244,29 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="request">The request.</param>
         /// <exception cref="System.ArgumentException">delete contact request</exception>
-        /// <exception cref="System.Exception"></exception>
-        public void DeleteChat(DeleteChatRequest request)
+        public async Task<string> DeleteChat(DeleteChatRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentException("delete chat request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.ChatIden))
-                {
-                    throw new Exception(PushBulletConstants.DeleteChatErrorMessages.ErrorIdenProperty);
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                string jsonResult = DeleteRequest(string.Format("{0}{1}/{2}", PushBulletConstants.BaseUrl, PushBulletConstants.ChatsUrls.Chats, request.ChatIden));
-
-                #endregion processing
+                throw new ArgumentException("delete chat request");
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.ChatIden))
             {
-                throw;
+                throw new ArgumentException(PushBulletConstants.DeleteChatErrorMessages.ErrorIdenProperty);
             }
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            var result = await DeleteRequest($"{PushBulletConstants.BaseUrl}{PushBulletConstants.ChatsUrls.Chats}/{request.ChatIden}").ConfigureAwait(false);
+            return result;
+
+            #endregion processing
         }
 
         #endregion Chats
@@ -327,32 +279,26 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="showActiveOnly">if set to <c>true</c> [show active only].</param>
         /// <returns></returns>
-        public UserContacts CurrentUsersContacts(bool showActiveOnly = false)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<UserContacts> CurrentUsersContacts(bool showActiveOnly = false)
         {
-            try
+            #region pre-processing
+
+            var additionalQuery = string.Empty;
+
+            if (showActiveOnly)
             {
-                #region pre-processing
-
-                string additionalQuery = string.Empty;
-
-                if (showActiveOnly)
-                {
-                    additionalQuery = "?active=true";
-                }
-
-                #endregion end pre-processing
-
-                #region processing
-
-                UserContacts result = GetRequest<UserContacts>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ContactsUrls.Contacts, additionalQuery).Trim());
-                return result;
-
-                #endregion processing
+                additionalQuery = "?active=true";
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            #endregion end pre-processing
+
+            #region processing
+
+            var result = await GetRequest<UserContacts>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ContactsUrls.Contacts, additionalQuery).Trim()).ConfigureAwait(false);
+            return result;
+
+            #endregion processing
         }
 
 
@@ -362,42 +308,34 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">create contact request</exception>
-        /// <exception cref="System.Exception">
-        /// </exception>
-        public Contact CreateNewContact(CreateContactRequest request)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<Contact> CreateNewContact(CreateContactRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentException("create contact request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Name))
-                {
-                    throw new Exception(PushBulletConstants.CreateContactErrorMessages.ErrorNameProperty);
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Email))
-                {
-                    throw new Exception(PushBulletConstants.CreateContactErrorMessages.ErrorEmailProperty);
-                }
-
-                #endregion pre-processing
-
-                #region processing
-
-                Contact response = PostRequest<Contact>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ContactsUrls.Contacts), request);
-                return response;
-
-                #endregion processing
+                throw new ArgumentException("create contact request");
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
-                throw;
+                throw new ArgumentException(PushBulletConstants.CreateContactErrorMessages.ErrorNameProperty);
             }
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                throw new ArgumentException(PushBulletConstants.CreateContactErrorMessages.ErrorEmailProperty);
+            }
+
+            #endregion pre-processing
+
+            #region processing
+
+            var response = await PostRequest<Contact>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.ContactsUrls.Contacts), request).ConfigureAwait(false);
+            return response;
+
+            #endregion processing
         }
 
 
@@ -407,48 +345,37 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">update contact request</exception>
-        /// <exception cref="System.Exception">
-        /// </exception>
-        public Contact UpdateContact(UpdateContactRequest request)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<Contact> UpdateContact(UpdateContactRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentException("update contact request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.ContactIden))
-                {
-                    throw new Exception(PushBulletConstants.UpdateContactErrorMessages.ErrorContactIdenProperty);
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Name))
-                {
-                    throw new Exception(PushBulletConstants.UpdateContactErrorMessages.ErrorNameProperty);
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                Contact response = PostRequest<Contact>(
-                    string.Format("{0}{1}/{2}",
-                        PushBulletConstants.BaseUrl,
-                        PushBulletConstants.ContactsUrls.Contacts,
-                        request.ContactIden),
-                    request);
-                return response;
-
-                #endregion processing
+                throw new ArgumentException("update contact request");
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.ContactIden))
             {
-                throw;
+                throw new ArgumentException(PushBulletConstants.UpdateContactErrorMessages.ErrorContactIdenProperty);
             }
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                throw new ArgumentException(PushBulletConstants.UpdateContactErrorMessages.ErrorNameProperty);
+            }
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            var response = await PostRequest<Contact>(
+                $"{PushBulletConstants.BaseUrl}{PushBulletConstants.ContactsUrls.Contacts}/{request.ContactIden}",
+                request).ConfigureAwait(false);
+            return response;
+
+            #endregion processing
         }
 
 
@@ -457,36 +384,29 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="request">The request.</param>
         /// <exception cref="System.ArgumentException">delete contact request</exception>
-        /// <exception cref="System.Exception"></exception>
-        public void DeleteContact(DeleteContactRequest request)
+        public async Task<string> DeleteContact(DeleteContactRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentException("delete contact request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.ContactIden))
-                {
-                    throw new Exception(PushBulletConstants.DeleteContactErrorMessages.ErrorContactIdenProperty);
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                string jsonResult = DeleteRequest(string.Format("{0}{1}/{2}", PushBulletConstants.BaseUrl, PushBulletConstants.ContactsUrls.Contacts, request.ContactIden));
-
-                #endregion processing
+                throw new ArgumentException("delete contact request");
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.ContactIden))
             {
-                throw;
+                throw new ArgumentException(PushBulletConstants.DeleteContactErrorMessages.ErrorContactIdenProperty);
             }
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            var result = await DeleteRequest($"{PushBulletConstants.BaseUrl}{PushBulletConstants.ContactsUrls.Contacts}/{request.ContactIden}").ConfigureAwait(false);
+            return result;
+
+            #endregion processing
         }
 
         #endregion Contacts Methods
@@ -500,13 +420,14 @@ namespace PushBulletSharp.Core
         /// <param name="channelTag">The channel tag.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">channel_tag</exception>
-        public Subscription SubscribeToChannel(string channelTag)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<Subscription> SubscribeToChannel(string channelTag)
         {
             #region pre-processing
 
             if (string.IsNullOrWhiteSpace(channelTag))
             {
-                throw new ArgumentNullException("channel_tag");
+                throw new ArgumentNullException(nameof(channelTag));
             }
 
             #endregion pre-processing
@@ -514,13 +435,13 @@ namespace PushBulletSharp.Core
 
             #region processing
 
-            ChannelSubscriptionRequest request = new ChannelSubscriptionRequest()
+            var request = new ChannelSubscriptionRequest()
             {
                 ChannelTag = channelTag
             };
 
-            BasicSubscription basicResponse = PostRequest<BasicSubscription>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.SubscriptionUrls.Subscriptions), request);
-            Subscription result = ConvertFromBasicSubscription(basicResponse);
+            var basicResponse = await PostRequest<BasicSubscription>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.SubscriptionUrls.Subscriptions), request).ConfigureAwait(false);
+            var result = ConvertFromBasicSubscription(basicResponse);
             return result;
 
             #endregion processing
@@ -532,37 +453,31 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="showActiveOnly">if set to <c>true</c> [show active only].</param>
         /// <returns></returns>
-        public UserSubscriptions CurrentUsersSubscriptions(bool showActiveOnly = false)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<UserSubscriptions> CurrentUsersSubscriptions(bool showActiveOnly = false)
         {
-            try
+            #region pre-processing
+
+            var additionalQuery = string.Empty;
+
+            if (showActiveOnly)
             {
-                #region pre-processing
-
-                string additionalQuery = string.Empty;
-
-                if (showActiveOnly)
-                {
-                    additionalQuery = "?active=true";
-                }
-
-                #endregion end pre-processing
-
-                #region processing
-
-                UserSubscriptions result = new UserSubscriptions();
-                var basicResult = GetRequest<BasicUserSubscriptions>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.SubscriptionUrls.Subscriptions, additionalQuery).Trim());
-                foreach (var sub in basicResult.Subscriptions)
-                {
-                    result.Subscriptions.Add(ConvertFromBasicSubscription(sub));
-                }
-                return result;
-
-                #endregion processing
+                additionalQuery = "?active=true";
             }
-            catch (Exception)
+
+            #endregion end pre-processing
+
+            #region processing
+
+            var result = new UserSubscriptions();
+            var basicResult = await GetRequest<BasicUserSubscriptions>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.SubscriptionUrls.Subscriptions, additionalQuery).Trim()).ConfigureAwait(false);
+            foreach (var sub in basicResult.Subscriptions)
             {
-                throw;
+                result.Subscriptions.Add(ConvertFromBasicSubscription(sub));
             }
+            return result;
+
+            #endregion processing
         }
 
 
@@ -573,7 +488,7 @@ namespace PushBulletSharp.Core
         /// <returns></returns>
         private Subscription ConvertFromBasicSubscription(BasicSubscription basicSubscription)
         {
-            Subscription result = new Subscription();
+            var result = new Subscription();
             result.Active = basicSubscription.Active;
             result.Channel = basicSubscription.Channel;
             result.Iden = basicSubscription.Iden;
@@ -587,14 +502,14 @@ namespace PushBulletSharp.Core
         /// Unsubscribes from channel.
         /// </summary>
         /// <param name="channelIden">The channel iden.</param>
-        /// <exception cref="System.ArgumentNullException">channel_iden</exception>
-        public void UnsubscribeFromChannel(string channelIden)
+        /// <exception cref="System.ArgumentNullException">channelIden</exception>
+        public async Task<string> UnsubscribeFromChannel(string channelIden)
         {
             #region pre-processing
 
             if (string.IsNullOrWhiteSpace(channelIden))
             {
-                throw new ArgumentNullException("channel_iden");
+                throw new ArgumentNullException(nameof(channelIden));
             }
 
             #endregion pre-processing
@@ -602,7 +517,8 @@ namespace PushBulletSharp.Core
 
             #region processing
 
-            string jsonResult = DeleteRequest(string.Format("{0}{1}/{2}", PushBulletConstants.BaseUrl, PushBulletConstants.SubscriptionUrls.Subscriptions, channelIden));
+            var result = await DeleteRequest($"{PushBulletConstants.BaseUrl}{PushBulletConstants.SubscriptionUrls.Subscriptions}/{channelIden}").ConfigureAwait(false);
+            return result;
 
             #endregion processing
         }
@@ -614,13 +530,14 @@ namespace PushBulletSharp.Core
         /// <param name="channelTag">The channel tag.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">channel_tag</exception>
-        public Channel GetChannelInformation(string channelTag)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<Channel> GetChannelInformation(string channelTag)
         {
             #region pre-processing
 
             if (string.IsNullOrWhiteSpace(channelTag))
             {
-                throw new ArgumentNullException("channel_tag");
+                throw new ArgumentNullException(nameof(channelTag));
             }
 
             #endregion pre-processing
@@ -628,7 +545,7 @@ namespace PushBulletSharp.Core
 
             #region processing
 
-            Channel result = GetRequest<Channel>(string.Format("{0}{1}?tag={2}", PushBulletConstants.BaseUrl, PushBulletConstants.SubscriptionUrls.ChannelInfo, channelTag));
+            var result = await GetRequest<Channel>($"{PushBulletConstants.BaseUrl}{PushBulletConstants.SubscriptionUrls.ChannelInfo}?tag={channelTag}").ConfigureAwait(false);
             return result;
 
             #endregion processing
@@ -645,51 +562,43 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <param name="ignoreEmptyFields">if set to <c>true</c> [ignore empty fields].</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">note request</exception>
-        /// <exception cref="System.Exception">
-        /// </exception>
-        public PushResponse PushNote(PushNoteRequest request, bool ignoreEmptyFields = false)
+        /// <exception cref="System.ArgumentNullException"></exception>
+        public async Task<PushResponse> PushNote(PushNoteRequest request, bool ignoreEmptyFields = false)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentNullException("note request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Type))
-                {
-                    throw new Exception(PushBulletConstants.PushRequestErrorMessages.EmptyTypeProperty);
-                }
-
-                if (!ignoreEmptyFields)
-                {
-                    if (string.IsNullOrWhiteSpace(request.Title))
-                    {
-                        throw new Exception(PushBulletConstants.PushNoteRequestErrorMessages.EmptyTitleProperty);
-                    }
-
-                    if (string.IsNullOrWhiteSpace(request.Body))
-                    {
-                        throw new Exception(PushBulletConstants.PushNoteRequestErrorMessages.EmptyBodyProperty);
-                    }
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                return PostPushRequest<PushNoteRequest>(request);
-
-                #endregion processing
+                throw new ArgumentNullException(nameof(request));
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.Type))
             {
-                throw;
+                throw new ArgumentNullException(PushBulletConstants.PushRequestErrorMessages.EmptyTypeProperty);
             }
+
+            if (!ignoreEmptyFields)
+            {
+                if (string.IsNullOrWhiteSpace(request.Title))
+                {
+                    throw new ArgumentNullException(PushBulletConstants.PushNoteRequestErrorMessages.EmptyTitleProperty);
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Body))
+                {
+                    throw new ArgumentNullException(PushBulletConstants.PushNoteRequestErrorMessages.EmptyBodyProperty);
+                }
+            }
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            var result = await PostPushRequest<PushNoteRequest>(request).ConfigureAwait(false);
+            return result;
+
+            #endregion processing
         }
 
 
@@ -699,53 +608,46 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <param name="ignoreEmptyFields">if set to <c>true</c> [ignore empty fields].</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">link request</exception>
-        /// <exception cref="System.Exception">
-        /// </exception>
-        public PushResponse PushLink(PushLinkRequest request, bool ignoreEmptyFields = false)
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.NullReferenceException"></exception>
+        public async Task<PushResponse> PushLink(PushLinkRequest request, bool ignoreEmptyFields = false)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentNullException("link request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.Type))
-                {
-                    throw new Exception(PushBulletConstants.PushRequestErrorMessages.EmptyTypeProperty);
-                }
-
-                if (!ignoreEmptyFields)
-                {
-                    if (string.IsNullOrWhiteSpace(request.Title))
-                    {
-                        throw new Exception(PushBulletConstants.PushLinkErrorMessages.EmptyTitleProperty);
-                    }
-
-                    if (string.IsNullOrWhiteSpace(request.Url))
-                    {
-                        throw new Exception(PushBulletConstants.PushLinkErrorMessages.EmptyUrlProperty);
-                    }
-
-                    //the body property is optional.
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                return PostPushRequest<PushLinkRequest>(request);
-
-                #endregion processing
+                throw new ArgumentNullException(nameof(request));
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.Type))
             {
-                throw;
+                throw new NullReferenceException(PushBulletConstants.PushRequestErrorMessages.EmptyTypeProperty);
             }
+
+            if (!ignoreEmptyFields)
+            {
+                if (string.IsNullOrWhiteSpace(request.Title))
+                {
+                    throw new NullReferenceException(PushBulletConstants.PushLinkErrorMessages.EmptyTitleProperty);
+                }
+
+                if (string.IsNullOrWhiteSpace(request.Url))
+                {
+                    throw new NullReferenceException(PushBulletConstants.PushLinkErrorMessages.EmptyUrlProperty);
+                }
+
+                //the body property is optional.
+            }
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            var result = await PostPushRequest<PushLinkRequest>(request).ConfigureAwait(false);
+            return result;
+
+            #endregion processing
         }
 
 
@@ -755,61 +657,55 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">file request</exception>
-        /// <exception cref="System.Exception">
-        /// </exception>
-        public PushResponse PushFile(PushFileRequest request)
+        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="System.NullReferenceException"></exception>
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<PushResponse> PushFile(PushFileRequest request)
         {
-            try
+            #region pre-processing
+
+            if (request == null)
             {
-                #region pre-processing
-
-                if (request == null)
-                {
-                    throw new ArgumentNullException("file request");
-                }
-
-                if (string.IsNullOrWhiteSpace(request.FileName))
-                {
-                    throw new Exception(PushBulletConstants.PushFileErrorMessages.EmptyFileNameProperty);
-                }
-
-                if (string.IsNullOrWhiteSpace(request.FileType))
-                {
-                    throw new Exception(PushBulletConstants.PushFileErrorMessages.EmptyFileTypeProperty);
-                }
-
-                if (request.FileStream == null)
-                {
-                    throw new Exception(PushBulletConstants.PushFileErrorMessages.EmptyFileStreamProperty);
-                }
-
-                if (!request.FileStream.CanRead)
-                {
-                    throw new Exception(PushBulletConstants.PushFileErrorMessages.CantReadFileStreamProperty);
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                FileUploadResponse uploadRequestResponse = PostRequest<FileUploadResponse>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.FileUrls.UploadRequest), request);
-
-                if (uploadRequestResponse.Data == null || string.IsNullOrWhiteSpace(uploadRequestResponse.FileUrl))
-                {
-                    throw new Exception(PushBulletConstants.PushFileErrorMessages.ErrorMakingFileUploadRequest);
-                }
-
-                PushFileToAmazonAWS(request, uploadRequestResponse);
-                request.FileUrl = uploadRequestResponse.FileUrl;
-                return PostPushRequest<PushFileRequest>(request);
-
-                #endregion processing
+                throw new ArgumentNullException(nameof(request));
             }
-            catch (Exception)
+
+            if (string.IsNullOrWhiteSpace(request.FileName))
             {
-                throw;
+                throw new NullReferenceException(PushBulletConstants.PushFileErrorMessages.EmptyFileNameProperty);
             }
+
+            if (string.IsNullOrWhiteSpace(request.FileType))
+            {
+                throw new NullReferenceException(PushBulletConstants.PushFileErrorMessages.EmptyFileTypeProperty);
+            }
+
+            if (request.FileStream == null)
+            {
+                throw new NullReferenceException(PushBulletConstants.PushFileErrorMessages.EmptyFileStreamProperty);
+            }
+
+            if (!request.FileStream.CanRead)
+            {
+                throw new Exception(PushBulletConstants.PushFileErrorMessages.CantReadFileStreamProperty);
+            }
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            var uploadRequestResponse = await PostRequest<FileUploadResponse>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.FileUrls.UploadRequest), request).ConfigureAwait(false);
+
+            if (uploadRequestResponse.Data == null || string.IsNullOrWhiteSpace(uploadRequestResponse.FileUrl))
+            {
+                throw new Exception(PushBulletConstants.PushFileErrorMessages.ErrorMakingFileUploadRequest);
+            }
+
+            PushFileToAmazonAWS(request, uploadRequestResponse);
+            request.FileUrl = uploadRequestResponse.FileUrl;
+            return await PostPushRequest<PushFileRequest>(request).ConfigureAwait(false);
+
+            #endregion processing
         }
 
 
@@ -818,96 +714,85 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="filter">The filter.</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// filter
-        /// or
-        /// filter
-        /// </exception>
-        /// <exception cref="System.Exception">Connect issue.</exception>
-        public PushResponseContainer GetPushes(PushResponseFilter filter)
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<PushResponseContainer> GetPushes(PushResponseFilter filter)
         {
-            try
+            #region pre-processing
+
+            if (filter == null)
             {
-                #region pre-processing
-
-                if (filter == null)
-                {
-                    throw new ArgumentNullException("filter");
-                }
-
-                string queryString = string.Empty;
-                List<string> queryStringList = new List<string>();
-
-                if (!string.IsNullOrWhiteSpace(filter.Cursor))
-                {
-                    string cursorQueryString = string.Format("cursor={0}", filter.Cursor);
-                    queryStringList.Add(cursorQueryString);
-                }
-                else
-                {
-                    if (filter.ModifiedDate != null)
-                    {
-                        string modifiedDate = filter.ModifiedDate.DateTimeToUnixTime().ToString(System.Globalization.CultureInfo.InvariantCulture);
-                        string modifiedDateQueryString = string.Format("modified_after={0}", modifiedDate);
-                        queryStringList.Add(modifiedDateQueryString);
-                    }
-
-                    if (filter.Active != null)
-                    {
-                        string activeQueryString = string.Format("active={0}", ((bool)filter.Active).ToString().ToLower());
-                        queryStringList.Add(activeQueryString);
-                    }
-
-                    if (filter.Limit > 0)
-                    {
-                        string limitQueryString = string.Format("limit={0}", filter.Limit);
-                        queryStringList.Add(limitQueryString);
-                    }
-                }
-
-                //Email filtering can be done on either cursor or regular queries
-                if (!string.IsNullOrWhiteSpace(filter.Email))
-                {
-                    string emailQueryString = string.Format("email={0}", filter.Email);
-                    queryStringList.Add(emailQueryString);
-                }
-
-                //Join all of the query strings
-                if (queryStringList.Count() > 0)
-                {
-                    queryString = string.Concat("?", string.Join("&", queryStringList));
-                }
-
-                #endregion
-
-
-                #region processing
-
-                PushResponseContainer results = new PushResponseContainer();
-                BasicPushResponseContainer basicPushContainer = GetRequest<BasicPushResponseContainer>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.PushesUrls.Pushes, queryString).Trim());
-                PushResponseContainer pushContainer = ConvertBasicPushResponseContainer(basicPushContainer);
-
-                if (filter.IncludeTypes != null && filter.IncludeTypes.Count() > 0)
-                {
-                    foreach (var type in filter.IncludeTypes)
-                    {
-                        results.Pushes.AddRange(pushContainer.Pushes.Where(o => o.Type == type).ToList());
-                    }
-                    results.Pushes = results.Pushes.OrderByDescending(o => o.Created).ToList();
-                }
-                else
-                {
-                    results = pushContainer;
-                }
-
-                return results;
-
-                #endregion processing
+                throw new ArgumentNullException(nameof(filter));
             }
-            catch (Exception)
+
+            var queryString = string.Empty;
+            var queryStringList = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(filter.Cursor))
             {
-                throw;
+                var cursorQueryString = $"cursor={filter.Cursor}";
+                queryStringList.Add(cursorQueryString);
             }
+            else
+            {
+                if (filter.ModifiedDate != null)
+                {
+                    var modifiedDate = filter.ModifiedDate.DateTimeToUnixTime().ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    var modifiedDateQueryString = $"modified_after={modifiedDate}";
+                    queryStringList.Add(modifiedDateQueryString);
+                }
+
+                if (filter.Active != null)
+                {
+                    var activeQueryString = $"active={((bool) filter.Active).ToString().ToLower()}";
+                    queryStringList.Add(activeQueryString);
+                }
+
+                if (filter.Limit > 0)
+                {
+                    var limitQueryString = $"limit={filter.Limit}";
+                    queryStringList.Add(limitQueryString);
+                }
+            }
+
+            //Email filtering can be done on either cursor or regular queries
+            if (!string.IsNullOrWhiteSpace(filter.Email))
+            {
+                var emailQueryString = $"email={filter.Email}";
+                queryStringList.Add(emailQueryString);
+            }
+
+            //Join all of the query strings
+            if (queryStringList.Any())
+            {
+                queryString = string.Concat("?", string.Join("&", queryStringList));
+            }
+
+            #endregion
+
+
+            #region processing
+
+            var results = new PushResponseContainer();
+            var basicPushContainer = await GetRequest<BasicPushResponseContainer>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.PushesUrls.Pushes, queryString).Trim()).ConfigureAwait(false);
+            var pushContainer = ConvertBasicPushResponseContainer(basicPushContainer);
+
+            if (filter.IncludeTypes != null && filter.IncludeTypes.Any())
+            {
+                foreach (var type in filter.IncludeTypes)
+                {
+                    results.Pushes.AddRange(pushContainer.Pushes.Where(o => o.Type == type).ToList());
+                }
+                results.Pushes = results.Pushes.OrderByDescending(o => o.Created).ToList();
+            }
+            else
+            {
+                results = pushContainer;
+            }
+
+            return results;
+
+            #endregion processing
         }
 
 
@@ -918,7 +803,7 @@ namespace PushBulletSharp.Core
         /// <returns></returns>
         private PushResponseContainer ConvertBasicPushResponseContainer(BasicPushResponseContainer container)
         {
-            PushResponseContainer result = new PushResponseContainer();
+            var result = new PushResponseContainer();
             foreach (var basicPush in container.Pushes)
             {
                 result.Pushes.Add(ConvertBasicPushResponse(basicPush));
@@ -939,7 +824,8 @@ namespace PushBulletSharp.Core
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">oauth token request</exception>
         /// <exception cref="System.Exception"></exception>
-        public OAuthTokenResponse RequestToken(OAuthTokenRequest request)
+        /// <exception cref="System.Net.Http.HttpRequestException"></exception>
+        public async Task<OAuthTokenResponse> RequestToken(OAuthTokenRequest request)
         {
             try
             {
@@ -947,7 +833,7 @@ namespace PushBulletSharp.Core
 
                 if (request == null)
                 {
-                    throw new ArgumentNullException("oauth token request");
+                    throw new ArgumentNullException(nameof(request));
                 }
 
                 #endregion pre-processing
@@ -955,12 +841,12 @@ namespace PushBulletSharp.Core
 
                 #region processing
 
-                List<KeyValuePair<string, string>> parameters = new List<KeyValuePair<string, string>>();
+                var parameters = new List<KeyValuePair<string, string>>();
                 parameters.Add(new KeyValuePair<string, string>("grant_type", request.GrantType));
                 parameters.Add(new KeyValuePair<string, string>("client_id", request.ClientId));
                 parameters.Add(new KeyValuePair<string, string>("client_secret", request.ClientSecret));
                 parameters.Add(new KeyValuePair<string, string>("code", request.Code));
-                string jsonResult = PostFormUrlEncodedContentRequest(string.Concat(PushBulletConstants.BaseUrlNonVersion, PushBulletConstants.OAuthUrls.OAuthToken), parameters);
+                var jsonResult = await PostFormUrlEncodedContentRequest(string.Concat(PushBulletConstants.BaseUrlNonVersion, PushBulletConstants.OAuthUrls.OAuthToken), parameters).ConfigureAwait(false);
                 var result = jsonResult.JsonToOjbect<OAuthTokenResponse>();
                 return result;
 
@@ -970,10 +856,6 @@ namespace PushBulletSharp.Core
             {
                 var statusCode = ((HttpWebResponse)ex.Response).StatusCode;
                 throw new Exception(string.Format(PushBulletConstants.OAuthErrorMessages.WebExceptionFormat, statusCode, ex.Message), ex);
-            }
-            catch (Exception)
-            {
-                throw;
             }
         }
 
@@ -989,49 +871,42 @@ namespace PushBulletSharp.Core
         /// <param name="encrypt">if set to <c>true</c> [encrypt].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">ephemeral</exception>
-        public string PushEphemeral(IEphemeral ephemeral, bool encrypt = false)
+        public async Task<string> PushEphemeral(IEphemeral ephemeral, bool encrypt = false)
         {
-            try
+            #region pre-processing
+
+            if (ephemeral == null)
             {
-                #region pre-processing
-
-                if (ephemeral == null)
-                {
-                    throw new ArgumentNullException("ephemeral");
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                if (encrypt)
-                {
-                    var request = new EncryptedEphemeralRequest()
-                    {
-                        Push = new EncryptedEphemeralMessage()
-                        {
-                            CipherText = EncryptionUtility.EncryptMessage(ephemeral.ToJson(), EncryptionKey)
-                        }
-                    };
-                    return PostEphemeralRequest(request);
-                }
-                else
-                {
-                    var request = new EphemeralRequest()
-                    {
-                        Push = ephemeral
-                    };
-
-                    return PostEphemeralRequest(request);
-                }
-
-                #endregion processing
+                throw new ArgumentNullException(nameof(ephemeral));
             }
-            catch (Exception)
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            if (encrypt)
             {
-                throw;
+                var request = new EncryptedEphemeralRequest()
+                {
+                    Push = new EncryptedEphemeralMessage()
+                    {
+                        CipherText = EncryptionUtility.EncryptMessage(ephemeral.ToJson(), EncryptionKey)
+                    }
+                };
+                return await PostEphemeralRequest(request).ConfigureAwait(false);
             }
+            else
+            {
+                var request = new EphemeralRequest()
+                {
+                    Push = ephemeral
+                };
+
+                return await PostEphemeralRequest(request).ConfigureAwait(false);
+            }
+
+            #endregion processing
         }
 
         /// <summary>
@@ -1041,49 +916,42 @@ namespace PushBulletSharp.Core
         /// <param name="encrypt">if set to <c>true</c> [encrypt].</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">jsonMessage</exception>
-        public string PushEphemeral(string jsonMessage, bool encrypt = false)
+        public async Task<string> PushEphemeral(string jsonMessage, bool encrypt = false)
         {
-            try
+            #region pre-processing
+
+            if (string.IsNullOrWhiteSpace(jsonMessage))
             {
-                #region pre-processing
-
-                if (string.IsNullOrWhiteSpace(jsonMessage))
-                {
-                    throw new ArgumentNullException("jsonMessage");
-                }
-
-                #endregion pre-processing
-
-
-                #region processing
-
-                if (encrypt)
-                {
-                    var request = new EncryptedEphemeralRequest()
-                    {
-                        Push = new EncryptedEphemeralMessage()
-                        {
-                            CipherText = EncryptionUtility.EncryptMessage(jsonMessage, EncryptionKey)
-                        }
-                    };
-                    return PostEphemeralRequest(request);
-                }
-                else
-                {
-                    var request = new StringEphemeralRequest()
-                    {
-                        Push = jsonMessage
-                    };
-
-                    return PostEphemeralRequest(request);
-                }
-
-                #endregion processing
+                throw new ArgumentNullException(nameof(jsonMessage));
             }
-            catch (Exception)
+
+            #endregion pre-processing
+
+
+            #region processing
+
+            if (encrypt)
             {
-                throw;
+                var request = new EncryptedEphemeralRequest()
+                {
+                    Push = new EncryptedEphemeralMessage()
+                    {
+                        CipherText = EncryptionUtility.EncryptMessage(jsonMessage, EncryptionKey)
+                    }
+                };
+                return await PostEphemeralRequest(request).ConfigureAwait(false);
             }
+            else
+            {
+                var request = new StringEphemeralRequest()
+                {
+                    Push = jsonMessage
+                };
+
+                return await PostEphemeralRequest(request).ConfigureAwait(false);
+            }
+
+            #endregion processing
         }
 
         #endregion Ephemerals
@@ -1111,20 +979,20 @@ namespace PushBulletSharp.Core
 
             #region processing
 
-            Models.Responses.WebSocket.WebSocketResponse result = new Models.Responses.WebSocket.WebSocketResponse();
+            var result = new Models.Responses.WebSocket.WebSocketResponse();
 
             var parsed = JObject.Parse(response);
 
             result.Subtype = parsed.SelectToken("subtype").Value<string>();
             result.Type = parsed.SelectToken("type").Value<string>();
 
-            string push = parsed.SelectToken("push").ToString();
+            var push = parsed.SelectToken("push").ToString();
 
             var basicResponse = JsonConvert.DeserializeObject<Models.Responses.WebSocket.WebSocketPushResponse>(push);
 
             if (basicResponse.Encrypted)
             {
-                EncryptedEphemeralMessage encryptedMessage = JsonConvert.DeserializeObject<EncryptedEphemeralMessage>(push);
+                var encryptedMessage = JsonConvert.DeserializeObject<EncryptedEphemeralMessage>(push);
 
                 if (string.IsNullOrWhiteSpace(EncryptionKey))
                 {
@@ -1132,7 +1000,7 @@ namespace PushBulletSharp.Core
                 }
                 else
                 {
-                    string decryptedMessage = EncryptionUtility.DecryptMessage(encryptedMessage.CipherText, EncryptionKey);
+                    var decryptedMessage = EncryptionUtility.DecryptMessage(encryptedMessage.CipherText, EncryptionKey);
                     var genericType = JsonConvert.DeserializeObject<Models.Responses.WebSocket.GenericPushTypeResponse>(decryptedMessage);
 
                     switch (genericType.Type)
@@ -1168,24 +1036,26 @@ namespace PushBulletSharp.Core
         /// <param name="url">The URL.</param>
         /// <returns></returns>
         /// <exception cref="System.Net.Http.HttpRequestException"></exception>
-        private T GetRequest<T>(string url)
+        private async Task<T> GetRequest<T>(string url)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.Add(PushBulletConstants.HeadersConstants.AuthorizationKey, string.Format(PushBulletConstants.HeadersConstants.AuthorizationValue, this.AccessToken));
-            HttpClient client = new HttpClient();
-            var response = client.SendAsync(request).Result;
-
-            switch ((int)response.StatusCode)
+            using (var client = new HttpClient())
             {
-                case (int)HttpStatusCode.OK:
+                var response = await client.SendAsync(request).ConfigureAwait(false);
+
+                switch ((int) response.StatusCode)
+                {
+                    case (int) HttpStatusCode.OK:
                     {
-                        var result = response.Content.ReadAsStringAsync().Result;
+                        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         var output = result.JsonToOjbect<T>();
                         return output;
                     }
-                default:
-                    HandleOtherStatusCodes(response.StatusCode);
-                    throw new HttpRequestException(string.Format(PushBulletConstants.StatusCodeExceptions.Default, (int)response.StatusCode, response.StatusCode));
+                    default:
+                        HandleOtherStatusCodes(response.StatusCode);
+                        throw new HttpRequestException(string.Format(PushBulletConstants.StatusCodeExceptions.Default, (int) response.StatusCode, response.StatusCode));
+                }
             }
         }
 
@@ -1198,26 +1068,28 @@ namespace PushBulletSharp.Core
         /// <param name="requestObject">The request object.</param>
         /// <returns></returns>
         /// <exception cref="System.Net.Http.HttpRequestException"></exception>
-        private T PostRequest<T>(string url, object requestObject)
+        private async Task<T> PostRequest<T>(string url, object requestObject)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
             request.Headers.Add(PushBulletConstants.HeadersConstants.AuthorizationKey, string.Format(PushBulletConstants.HeadersConstants.AuthorizationValue, this.AccessToken));
             request.Content = new StringContent(requestObject.ToJson(), Encoding.UTF8, PushBulletConstants.MimeTypes.Json);
 
-            HttpClient client = new HttpClient();
-            var response = client.SendAsync(request).Result;
-
-            switch ((int)response.StatusCode)
+            using (var client = new HttpClient())
             {
-                case (int)HttpStatusCode.OK:
+                var response = await client.SendAsync(request).ConfigureAwait(false);
+
+                switch ((int) response.StatusCode)
+                {
+                    case (int) HttpStatusCode.OK:
                     {
-                        var result = response.Content.ReadAsStringAsync().Result;
+                        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         var output = result.JsonToOjbect<T>();
                         return output;
                     }
-                default:
-                    HandleOtherStatusCodes(response.StatusCode);
-                    throw new HttpRequestException(string.Format(PushBulletConstants.StatusCodeExceptions.Default, (int)response.StatusCode, response.StatusCode));
+                    default:
+                        HandleOtherStatusCodes(response.StatusCode);
+                        throw new HttpRequestException(string.Format(PushBulletConstants.StatusCodeExceptions.Default, (int) response.StatusCode, response.StatusCode));
+                }
             }
         }
 
@@ -1229,33 +1101,28 @@ namespace PushBulletSharp.Core
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         /// <exception cref="System.Net.Http.HttpRequestException"></exception>
-        private string PostFormUrlEncodedContentRequest(string url, List<KeyValuePair<string, string>> parameters)
+        private async Task<string> PostFormUrlEncodedContentRequest(string url, List<KeyValuePair<string, string>> parameters)
         {
-            try
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Add(PushBulletConstants.HeadersConstants.AuthorizationKey, string.Format(PushBulletConstants.HeadersConstants.AuthorizationValue, this.AccessToken));
+            //string postData = string.Join("&", parameters);
+            request.Content = new FormUrlEncodedContent(parameters);
+
+            using (var client = new HttpClient())
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-                request.Headers.Add(PushBulletConstants.HeadersConstants.AuthorizationKey, string.Format(PushBulletConstants.HeadersConstants.AuthorizationValue, this.AccessToken));
-                //string postData = string.Join("&", parameters);
-                request.Content = new FormUrlEncodedContent(parameters);
+                var response = await client.SendAsync(request).ConfigureAwait(false);
 
-                HttpClient client = new HttpClient();
-                var response = client.SendAsync(request).Result;
-
-                switch ((int)response.StatusCode)
+                switch ((int) response.StatusCode)
                 {
-                    case (int)HttpStatusCode.OK:
-                        {
-                            var result = response.Content.ReadAsStringAsync().Result;
-                            return result;
-                        }
+                    case (int) HttpStatusCode.OK:
+                    {
+                        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        return result;
+                    }
                     default:
                         HandleOtherStatusCodes(response.StatusCode);
-                        throw new HttpRequestException(string.Format(PushBulletConstants.StatusCodeExceptions.Default, (int)response.StatusCode, response.StatusCode));
+                        throw new HttpRequestException(string.Format(PushBulletConstants.StatusCodeExceptions.Default, (int) response.StatusCode, response.StatusCode));
                 }
-            }
-            catch (Exception)
-            {
-                throw;
             }
         }
 
@@ -1265,18 +1132,18 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
-        private string DeleteRequest(string url)
+        private async Task<string> DeleteRequest(string url)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, url);
+            var request = new HttpRequestMessage(HttpMethod.Delete, url);
             request.Headers.Add(PushBulletConstants.HeadersConstants.AuthorizationKey, string.Format(PushBulletConstants.HeadersConstants.AuthorizationValue, this.AccessToken));
-            HttpClient client = new HttpClient();
-            var response = client.SendAsync(request).Result;
+            var client = new HttpClient();
+            var response = await client.SendAsync(request).ConfigureAwait(false);
 
             switch ((int)response.StatusCode)
             {
                 case (int)HttpStatusCode.OK:
                     {
-                        var result = response.Content.ReadAsStringAsync().Result;
+                        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         return result;
                     }
                 default:
@@ -1322,9 +1189,9 @@ namespace PushBulletSharp.Core
         /// </summary>
         /// <param name="requestObject">The request object.</param>
         /// <returns></returns>
-        private string PostEphemeralRequest(EphemeralRequestBase requestObject)
+        private async Task<string> PostEphemeralRequest(EphemeralRequestBase requestObject)
         {
-            var response = PostRequest<string>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.EphemeralsUrls.Ephemerals), requestObject);
+            var response = await PostRequest<string>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.EphemeralsUrls.Ephemerals), requestObject).ConfigureAwait(false);
             return response;
         }
 
@@ -1335,10 +1202,10 @@ namespace PushBulletSharp.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="requestObject">The request object.</param>
         /// <returns></returns>
-        private PushResponse PostPushRequest<T>(T requestObject)
+        private async Task<PushResponse> PostPushRequest<T>(T requestObject)
         {
-            var basicResponse = PostRequest<BasicPushResponse>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.PushesUrls.Pushes), requestObject);
-            PushResponse response = ConvertBasicPushResponse(basicResponse);
+            var basicResponse = await PostRequest<BasicPushResponse>(string.Concat(PushBulletConstants.BaseUrl, PushBulletConstants.PushesUrls.Pushes), requestObject).ConfigureAwait(false);
+            var response = ConvertBasicPushResponse(basicResponse);
             return response;
         }
 
@@ -1350,8 +1217,10 @@ namespace PushBulletSharp.Core
         /// <returns></returns>
         private PushResponse ConvertBasicPushResponse(BasicPushResponse basicResponse)
         {
-            PushResponse response = new PushResponse();
-            response.Active = basicResponse.Active;
+            var response = new PushResponse
+            {
+                Active = basicResponse.Active
+            };
             if (basicResponse.Created != null)
             {
                 response.Created = TimeZoneInfo.ConvertTime(basicResponse.Created.UnixTimeToDateTime(), TimeZoneInfo);
@@ -1393,8 +1262,10 @@ namespace PushBulletSharp.Core
         /// <returns></returns>
         private UserChats ConvertBasicChatResponse(BasicChatsResponse basicResponse)
         {
-            UserChats response = new UserChats();
-            response.Cursor = basicResponse.Cursor;
+            var response = new UserChats
+            {
+                Cursor = basicResponse.Cursor
+            };
 
             foreach (var basicChat in basicResponse.Chats)
             {
@@ -1406,8 +1277,10 @@ namespace PushBulletSharp.Core
 
         private Chat ConvertBasicChat(BasicChat basicChat)
         {
-            Chat chat = new Chat();
-            chat.Active = basicChat.Active;
+            var chat = new Chat
+            {
+                Active = basicChat.Active
+            };
             if (basicChat.Created != null)
             {
                 chat.Created = TimeZoneInfo.ConvertTime(basicChat.Created.UnixTimeToDateTime(), TimeZoneInfo);
@@ -1449,7 +1322,7 @@ namespace PushBulletSharp.Core
         /// <param name="request">The request.</param>
         /// <param name="fileUploadResponse">The file upload response.</param>
         /// <exception cref="System.Exception"></exception>
-        private void PushFileToAmazonAWS(PushFileRequest request, FileUploadResponse fileUploadResponse)
+        private async void PushFileToAmazonAWS(PushFileRequest request, FileUploadResponse fileUploadResponse)
         {
             StringContent awsaccesskeyidContent = null;
             StringContent aclContent = null;
@@ -1457,7 +1330,6 @@ namespace PushBulletSharp.Core
             StringContent signatureContent = null;
             StringContent policyContent = null;
             StringContent contentTypeContent = null;
-            StringContent cacheControlContent = null;
             ByteArrayContent fileContent = null;
 
             try
@@ -1480,28 +1352,28 @@ namespace PushBulletSharp.Core
 
                     using (var memoryStream = new MemoryStream())
                     {
-                        request.FileStream.CopyTo(memoryStream);
+                        await request.FileStream.CopyToAsync(memoryStream).ConfigureAwait(false);
                         fileContent = new ByteArrayContent(memoryStream.ToArray());
                     }
 
                     fileContent.Headers.Add(PushBulletConstants.AmazonHeaders.ContentType, PushBulletConstants.MimeTypes.OctetStream);
                     fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
                     {
-                        Name = string.Format("\"{0}\"", "file"),
-                        FileName = string.Format("\"{0}\"", request.FileName)
+                        Name = $"\"{"file"}\"",
+                        FileName = $"\"{request.FileName}\""
                     };
 
                     multiPartCont.Add(fileContent);
 
                     using (var httpClient = new HttpClient())
                     {
-                        Task<HttpResponseMessage> httpRequest = httpClient.PostAsync(fileUploadResponse.UploadUrl, multiPartCont);
-                        HttpResponseMessage httpResponse = httpRequest.Result;
+                        var httpRequest = httpClient.PostAsync(fileUploadResponse.UploadUrl, multiPartCont);
+                        var httpResponse = await httpRequest.ConfigureAwait(false);
 
-                        Task<string> xmlContentResponse = httpResponse.Content.ReadAsStringAsync();
-                        if (!string.IsNullOrWhiteSpace(xmlContentResponse.Result))
+                        var xmlContentResponse = httpResponse.Content.ReadAsStringAsync();
+                        if (!string.IsNullOrWhiteSpace(await xmlContentResponse.ConfigureAwait(false)))
                         {
-                            throw new Exception(xmlContentResponse.Result);
+                            throw new Exception(await xmlContentResponse.ConfigureAwait(false));
                         }
                     }
                 }
@@ -1512,38 +1384,13 @@ namespace PushBulletSharp.Core
             }
             finally
             {
-                if (awsaccesskeyidContent != null)
-                {
-                    awsaccesskeyidContent.Dispose();
-                }
-                if (aclContent != null)
-                {
-                    aclContent.Dispose();
-                }
-                if (keyContent != null)
-                {
-                    keyContent.Dispose();
-                }
-                if (signatureContent != null)
-                {
-                    signatureContent.Dispose();
-                }
-                if (policyContent != null)
-                {
-                    policyContent.Dispose();
-                }
-                if (contentTypeContent != null)
-                {
-                    contentTypeContent.Dispose();
-                }
-                if (cacheControlContent != null)
-                {
-                    cacheControlContent.Dispose();
-                }
-                if (fileContent != null)
-                {
-                    fileContent.Dispose();
-                }
+                awsaccesskeyidContent?.Dispose();
+                aclContent?.Dispose();
+                keyContent?.Dispose();
+                signatureContent?.Dispose();
+                policyContent?.Dispose();
+                contentTypeContent?.Dispose();
+                fileContent?.Dispose();
             }
         }
 
@@ -1559,15 +1406,15 @@ namespace PushBulletSharp.Core
             var content = new StringContent(value);
             content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
             {
-                Name = string.Format("\"{0}\"", name)
+                Name = $"\"{name}\""
             };
             return content;
         }
 
 
-        private void SetEncryptionKey(string encryptionPassword)
+        private async void SetEncryptionKey(string encryptionPassword)
         {
-            var currentUser = CurrentUsersInformation();
+            var currentUser = await CurrentUsersInformation().ConfigureAwait(false);
             if (currentUser == null)
             {
                 throw new Exception("Could not retrieve the current user information to create an encryption key.");
