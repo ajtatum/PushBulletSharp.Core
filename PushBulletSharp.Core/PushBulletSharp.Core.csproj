@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
+        <Title>PushBulletSharp.Core</Title>
+        <PackageId>PushBulletSharp.Core</PackageId>
         <Description>A simple C# wrapper to PushBullet's HTTP API.</Description>
         <PackageProjectUrl>https://github.com/ajtatum/PushBulletSharp.Core</PackageProjectUrl>
         <RepositoryUrl>https://github.com/ajtatum/PushBulletSharp.Core</RepositoryUrl>
@@ -12,6 +14,8 @@
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageIconUrl>https://raw.githubusercontent.com/ajtatum/PushBulletSharp.Core/master/pushbulletsharp-logo.png</PackageIconUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Version>1.0.3</Version>
+        <PackageVersion>1.0.3</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
