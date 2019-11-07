@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Push Request Base
+    /// </summary>
     [DataContract]
     public abstract class PushRequestBase
     {

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Create Contact Request
+    /// </summary>
     [DataContract]
     public class CreateContactRequest
     {

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Basic Chat
+    /// </summary>
     [DataContract]
     public class BasicChat
     {

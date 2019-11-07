@@ -4,6 +4,9 @@ using PushBulletSharp.Core.Constants;
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Push File Request
+    /// </summary>
     [DataContract]
     public class PushFileRequest : PushRequestBase
     {

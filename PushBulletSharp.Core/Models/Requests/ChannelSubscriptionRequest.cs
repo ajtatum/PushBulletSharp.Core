@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Channel Subscription Request
+    /// </summary>
     [DataContract]
     public class ChannelSubscriptionRequest
     {

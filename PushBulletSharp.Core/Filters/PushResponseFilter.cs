@@ -3,6 +3,9 @@ using PushBulletSharp.Core.Models.Responses;
 
 namespace PushBulletSharp.Core.Filters
 {
+    /// <summary>
+    /// Push Response Filter
+    /// </summary>
     public class PushResponseFilter
     {
         /// <summary>

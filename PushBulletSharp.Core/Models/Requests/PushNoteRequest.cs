@@ -3,6 +3,9 @@ using PushBulletSharp.Core.Constants;
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Push Note Request
+    /// </summary>
     [DataContract]
     public class PushNoteRequest : PushRequestBase
     {

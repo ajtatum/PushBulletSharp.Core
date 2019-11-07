@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests.Ephemerals
 {
+    /// <summary>
+    /// Ephemeral Request Base
+    /// </summary>
     [DataContract]
     public abstract class EphemeralRequestBase
     {
@@ -13,6 +16,9 @@ namespace PushBulletSharp.Core.Models.Requests.Ephemerals
             Type = "push";
         }
 
+        /// <summary>
+        /// Type
+        /// </summary>
         [DataMember(Name = "type")]
         public string Type { get; set; }
     }

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses.Ephemerals
 {
+    /// <summary>
+    /// Notification Ephemeral
+    /// </summary>
     [DataContract]
     public class NotificationEphemeral : IEphemeral
     {
@@ -95,6 +98,9 @@ namespace PushBulletSharp.Core.Models.Responses.Ephemerals
         [DataMember(Name = "has_root")]
         public bool HasRoot { get; set; }
 
+        /// <summary>
+        /// Client Version
+        /// </summary>
         [DataMember(Name = "client_version")]
         public int ClientVersion { get; set; }
     }

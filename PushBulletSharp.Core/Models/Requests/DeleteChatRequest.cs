@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Delete Chat Request
+    /// </summary>
     [DataContract]
     public class DeleteChatRequest
     {

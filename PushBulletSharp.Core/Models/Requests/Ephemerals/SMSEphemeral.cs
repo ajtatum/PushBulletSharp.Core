@@ -2,11 +2,14 @@
 
 namespace PushBulletSharp.Core.Models.Requests.Ephemerals
 {
+    /// <summary>
+    /// SMS Ephemeral
+    /// </summary>
     [DataContract]
     public class SMSEphemeral : IEphemeral
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PushSMSRequest"/> class.
+        /// Initializes a new instance of the <see cref="SMSEphemeral"/> class.
         /// </summary>
         public SMSEphemeral()
         {

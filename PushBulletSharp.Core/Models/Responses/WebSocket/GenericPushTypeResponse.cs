@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses.WebSocket
 {
+    /// <summary>
+    /// Generic Push Type Response
+    /// </summary>
     [DataContract]
     public class GenericPushTypeResponse
     {

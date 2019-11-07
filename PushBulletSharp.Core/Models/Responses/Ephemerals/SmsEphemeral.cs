@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses.Ephemerals
 {
+    /// <summary>
+    /// SMS Ephemeral
+    /// </summary>
     [DataContract]
     public class SMSEphemeral : IEphemeral
     {

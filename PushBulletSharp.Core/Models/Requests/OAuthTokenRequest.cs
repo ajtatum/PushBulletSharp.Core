@@ -3,6 +3,9 @@ using PushBulletSharp.Core.Constants;
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// OAuth Token Request
+    /// </summary>
     [DataContract]
     public class OAuthTokenRequest
     {

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests.Ephemerals
 {
+    /// <summary>
+    /// Dismissal Ephemeral
+    /// </summary>
     [DataContract]
     public class DismissalEphemeral : IEphemeral
     {

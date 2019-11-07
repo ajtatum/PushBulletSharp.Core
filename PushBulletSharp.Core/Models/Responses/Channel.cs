@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Channel
+    /// </summary>
     [DataContract]
     public class Channel
     {

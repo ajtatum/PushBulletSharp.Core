@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// OAuth Token Response
+    /// </summary>
     [DataContract]
     public class OAuthTokenResponse
     {

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Device
+    /// </summary>
     [DataContract]
     public class Device
     {

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models
 {
+    /// <summary>
+    /// IEphemeral
+    /// </summary>
     [KnownType(typeof(Requests.Ephemerals.DismissalEphemeral))]
     [KnownType(typeof(Requests.Ephemerals.NotificationEphemeral))]
     [KnownType(typeof(Requests.Ephemerals.SMSEphemeral))]

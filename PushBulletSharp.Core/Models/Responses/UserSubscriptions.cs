@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// User Subscriptions
+    /// </summary>
     [DataContract]
     public class UserSubscriptions
     {

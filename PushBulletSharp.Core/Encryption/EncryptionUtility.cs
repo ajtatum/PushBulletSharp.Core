@@ -10,6 +10,9 @@ using Org.BouncyCastle.Security;
 
 namespace PushBulletSharp.Core.Encryption
 {
+    /// <summary>
+    /// Encryption Utility
+    /// </summary>
     public static class EncryptionUtility
     {
         private static readonly SecureRandom Random = new SecureRandom();
@@ -27,9 +30,9 @@ namespace PushBulletSharp.Core.Encryption
         /// <returns></returns>
         public static string GenerateKey(string user_iden, string password)
         {
-            int keyLength = 32;
-            int iterations = 30000;
-            byte[] saltBytes = Encoding.UTF8.GetBytes(user_iden);
+            var keyLength = 32;
+            var iterations = 30000;
+            var saltBytes = Encoding.UTF8.GetBytes(user_iden);
 
             var pdb = new Pkcs5S2ParametersGenerator(new Org.BouncyCastle.Crypto.Digests.Sha256Digest());
             pdb.Init(PbeParametersGenerator.Pkcs5PasswordToBytes(password.ToCharArray()), saltBytes,
@@ -53,15 +56,15 @@ namespace PushBulletSharp.Core.Encryption
         /// PushBullet requires the encryption to be in the format of [version + tag + IV + encrypted message]
         public static string EncryptMessage(string message, string key)
         {
-            byte[] messageBytes = Encoding.UTF8.GetBytes(message);
-            byte[] keyBytes = Convert.FromBase64String(key);
-            byte[] versionBytes = Encoding.UTF8.GetBytes("1");
+            var messageBytes = Encoding.UTF8.GetBytes(message);
+            var keyBytes = Convert.FromBase64String(key);
+            var versionBytes = Encoding.UTF8.GetBytes("1");
 
             if (keyBytes == null || keyBytes.Length != KeyBitSize / 8)
-                throw new ArgumentException(string.Format("Key needs to be {0} bit!", KeyBitSize), "key");
+                throw new ArgumentException($"Key needs to be {KeyBitSize} bit!", nameof(key));
 
             if (message == null || message.Length == 0)
-                throw new ArgumentException("Message required!", "message");
+                throw new ArgumentException("Message required!", nameof(message));
 
             //Using random nonce large enough not to repeat
             var nonce = new byte[NonceBitSize / 8];
@@ -79,7 +82,7 @@ namespace PushBulletSharp.Core.Encryption
 
             //Get the tag and remove the tag from the cipherText
             var tag = cipher.GetMac();
-            byte[] encrypted = new byte[cipherText.Length - tag.Length];
+            var encrypted = new byte[cipherText.Length - tag.Length];
             Array.Copy(cipherText, 0, encrypted, 0, encrypted.Length);
 
             //Assemble Message
@@ -115,14 +118,14 @@ namespace PushBulletSharp.Core.Encryption
         /// <exception cref="System.Exception">Invalid version!</exception>
         public static string DecryptMessage(string encryptedMessage, string key)
         {
-            byte[] encryptedMessageBytes = Convert.FromBase64String(encryptedMessage);
-            byte[] keyBytes = Convert.FromBase64String(key);
+            var encryptedMessageBytes = Convert.FromBase64String(encryptedMessage);
+            var keyBytes = Convert.FromBase64String(key);
 
             if (keyBytes == null || keyBytes.Length != KeyBitSize / 8)
-                throw new ArgumentException(string.Format("Key needs to be {0} bit!", KeyBitSize), "key");
+                throw new ArgumentException($"Key needs to be {KeyBitSize} bit!", nameof(key));
 
             if (encryptedMessage == null || encryptedMessage.Length == 0)
-                throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
+                throw new ArgumentException("Encrypted Message Required!", nameof(encryptedMessage));
 
             using (var cipherStream = new MemoryStream(encryptedMessageBytes))
             {
@@ -149,7 +152,7 @@ namespace PushBulletSharp.Core.Encryption
                     //Decrypt Cipher Text
                     var cipherText = cipherReader.ReadBytes(encryptedMessage.Length - version.Length - nonce.Length);
 
-                    byte[] cipherWithTag = new byte[cipherText.Length + tag.Length];
+                    var cipherWithTag = new byte[cipherText.Length + tag.Length];
                     Array.Copy(cipherText, cipherWithTag, cipherText.Length);
                     Array.Copy(tag, 0, cipherWithTag, cipherText.Length, tag.Length);
                     var plainText = new byte[cipher.GetOutputSize(cipherWithTag.Length)];

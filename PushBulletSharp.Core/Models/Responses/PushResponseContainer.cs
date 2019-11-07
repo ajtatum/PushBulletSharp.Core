@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Push Response Container
+    /// </summary>
     public class PushResponseContainer
     {
         /// <summary>

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Google User Info
+    /// </summary>
     [DataContract]
     public class GoogleUserInfo
     {

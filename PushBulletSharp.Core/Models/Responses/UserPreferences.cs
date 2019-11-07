@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// User Preferences
+    /// </summary>
     [DataContract]
     public class UserPreferences
     {
@@ -24,6 +27,9 @@ namespace PushBulletSharp.Core.Models.Responses
         public bool Social { get; set; }
     }
 
+    /// <summary>
+    /// Onboarding
+    /// </summary>
     [DataContract]
     public class Onboarding
     {

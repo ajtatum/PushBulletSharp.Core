@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses.WebSocket
 {
+    /// <summary>
+    /// WebSocket Response
+    /// </summary>
     [DataContract]
     public class WebSocketResponse
     {

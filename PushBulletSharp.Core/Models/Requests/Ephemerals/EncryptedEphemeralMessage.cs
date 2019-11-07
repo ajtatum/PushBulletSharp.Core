@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests.Ephemerals
 {
+    /// <summary>
+    /// Encrypted Ephemeral Message
+    /// </summary>
     [DataContract]
     public class EncryptedEphemeralMessage : IEphemeral
     {

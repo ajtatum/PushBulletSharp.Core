@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests.Ephemerals
 {
+    /// <summary>
+    /// Ephemeral Request
+    /// </summary>
     [DataContract]
     public class EphemeralRequest : EphemeralRequestBase
     {

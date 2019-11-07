@@ -8,6 +8,9 @@ using PushBulletSharp.Core.Models.Responses;
 
 namespace PushBulletSharp.Core.Extensions
 {
+    /// <summary>
+    /// PushBulletSharp Extensions
+    /// </summary>
     public static class PushBulletSharpExtensions
     {
         /// <summary>
@@ -19,7 +22,7 @@ namespace PushBulletSharp.Core.Extensions
         {
             var serializer = new DataContractJsonSerializer(data.GetType());
 
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 serializer.WriteObject(stream, data);
                 return Encoding.UTF8.GetString(stream.ToArray(), 0, (int)stream.Length);
@@ -35,7 +38,7 @@ namespace PushBulletSharp.Core.Extensions
         public static T JsonToOjbect<T>(this string json)
         {
             var bytes = Encoding.Unicode.GetBytes(json);
-            using (MemoryStream stream = new MemoryStream(bytes))
+            using (var stream = new MemoryStream(bytes))
             {
                 var serializer = new DataContractJsonSerializer(typeof(T));
                 var output = (T)serializer.ReadObject(stream);
@@ -50,8 +53,8 @@ namespace PushBulletSharp.Core.Extensions
         /// <returns></returns>
         public static DateTime UnixTimeToDateTime(this string unixTime)
         {
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            double seconds = double.Parse(unixTime, CultureInfo.InvariantCulture);
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var seconds = double.Parse(unixTime, CultureInfo.InvariantCulture);
             return epoch.AddSeconds(seconds);
         }
 
@@ -76,7 +79,7 @@ namespace PushBulletSharp.Core.Extensions
         {
             if(dateTime != null)
             {
-                DateTime nonNullDateTime = dateTime ?? DateTime.Now;
+                var nonNullDateTime = dateTime ?? DateTime.Now;
                 return nonNullDateTime.DateTimeToUnixTime();
             }
             else
@@ -92,7 +95,7 @@ namespace PushBulletSharp.Core.Extensions
         /// <returns></returns>
         public static PushResponse ConvertBasicPushResponse(BasicPushResponse basicResponse)
         {
-            PushResponse response = new PushResponse();
+            var response = new PushResponse();
             response.Active = basicResponse.Active;
             response.Created = TimeZoneInfo.ConvertTime(basicResponse.Created.UnixTimeToDateTime(), TimeZoneInfo.Utc);
             response.Dismissed = basicResponse.Dismissed;

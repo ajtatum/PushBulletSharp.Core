@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests
 {
+    /// <summary>
+    /// Delete Contact Request
+    /// </summary>
     [DataContract]
     public class DeleteContactRequest
     {

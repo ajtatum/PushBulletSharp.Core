@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Basic Push Response
+    /// </summary>
     [DataContract]
     public class BasicPushResponse
     {
@@ -258,11 +261,20 @@ namespace PushBulletSharp.Core.Models.Responses
         public bool Encrypted { get; set; }
     }
 
+    /// <summary>
+    /// Item
+    /// </summary>
     [DataContract]
     public class Item
     {
+        /// <summary>
+        /// Checked
+        /// </summary>
         [DataMember(Name = "checked")]
         public bool Checked { get; set; }
+        /// <summary>
+        /// Text
+        /// </summary>
         [DataMember(Name = "text")]
         public string Text { get; set; }
     }

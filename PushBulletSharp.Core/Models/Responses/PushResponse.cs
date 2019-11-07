@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Push Response
+    /// </summary>
     public class PushResponse
     {
         /// <summary>
@@ -218,8 +221,17 @@ namespace PushBulletSharp.Core.Models.Responses
     /// </summary>
     public enum PushResponseType
     {
+        /// <summary>
+        /// Note
+        /// </summary>
         Note,
+        /// <summary>
+        /// Link
+        /// </summary>
         Link,
+        /// <summary>
+        /// File
+        /// </summary>
         File
     }
 }

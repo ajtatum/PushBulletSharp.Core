@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Responses
 {
+    /// <summary>
+    /// Contact
+    /// </summary>
     [DataContract]
     public class Contact
     {

@@ -2,6 +2,9 @@
 
 namespace PushBulletSharp.Core.Models.Requests.Ephemerals
 {
+    /// <summary>
+    /// Universal Copy Paste Ephemeral
+    /// </summary>
     [DataContract]
     public class UniversalCopyPasteEphemeral : IEphemeral
     {
