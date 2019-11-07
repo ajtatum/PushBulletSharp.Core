@@ -16,11 +16,11 @@ namespace PushBulletSharp.Core.Tests
         /// Currents the user information test.
         /// </summary>
         [TestMethod]
-        public void CurrentUserInfoTest()
+        public async void CurrentUserInfoTest()
         {
             try
             {
-                var response = Client.CurrentUsersInformation();
+                var response = await Client.CurrentUsersInformation();
                 Assert.IsNotNull(response);
             }
             catch (Exception ex)
@@ -31,14 +31,14 @@ namespace PushBulletSharp.Core.Tests
 
 
         /// <summary>
-        /// Deviceses the test.
+        /// Devices the test.
         /// </summary>
         [TestMethod]
-        public void DevicesTest()
+        public async void DevicesTest()
         {
             try
             {
-                var devices = Client.CurrentUsersDevices();
+                var devices = await Client.CurrentUsersDevices();
                 Assert.IsNotNull(devices);
             }
             catch (Exception ex)
@@ -52,11 +52,11 @@ namespace PushBulletSharp.Core.Tests
         /// Actives the devices test.
         /// </summary>
         [TestMethod]
-        public void ActiveDevicesTest()
+        public async void ActiveDevicesTest()
         {
             try
             {
-                var devices = Client.CurrentUsersDevices(true);
+                var devices = await Client.CurrentUsersDevices(true);
                 Assert.IsNotNull(devices);
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace PushBulletSharp.Core.Tests
                     Body = "This is a test from my C# wrapper."
                 };
 
-                var response = Client.PushNote(reqeust);
+                var response = await Client.PushNote(reqeust);
             }
             catch (Exception ex)
             {
@@ -116,7 +116,7 @@ namespace PushBulletSharp.Core.Tests
                     Body = "This is a test from my C# wrapper."
                 };
 
-                var response = Client.PushNote(reqeust);
+                var response = await Client.PushNote(reqeust);
             }
             catch (Exception ex)
             {
@@ -147,7 +147,7 @@ namespace PushBulletSharp.Core.Tests
                     Body = "Search the internet."
                 };
 
-                var response = Client.PushLink(reqeust);
+                var response = await Client.PushLink(reqeust);
             }
             catch (Exception ex)
             {
@@ -181,7 +181,7 @@ namespace PushBulletSharp.Core.Tests
                         Body = "Work It Harder\r\nMake It Better\r\nDo It Faster"
                     };
 
-                    var response = Client.PushFile(request);
+                    var response = await Client.PushFile(request);
                 }
             }
             catch (Exception ex)
@@ -214,7 +214,7 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesNotesAndFilesSince()
+        public async void GetPushesNotesAndFilesSince()
         {
             try
             {
@@ -223,7 +223,7 @@ namespace PushBulletSharp.Core.Tests
                     ModifiedDate = new DateTime(2015, 3, 14),
                     IncludeTypes = new PushResponseType[] { PushResponseType.Note, PushResponseType.File }
                 };
-                var results = Client.GetPushes(filter);
+                var results = await Client.GetPushes(filter);
             }
             catch (Exception ex)
             {
@@ -232,11 +232,11 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesAll()
+        public async void GetPushesAll()
         {
             try
             {
-                var results = Client.GetPushes(new PushResponseFilter());
+                var results = await Client.GetPushes(new PushResponseFilter());
             }
             catch (Exception ex)
             {
@@ -263,7 +263,7 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GatAllPushesByEmail()
+        public async void GatAllPushesByEmail()
         {
             try
             {
@@ -272,7 +272,7 @@ namespace PushBulletSharp.Core.Tests
                     Email = TestHelper.GetConfig("Email")
                 };
 
-                var results = Client.GetPushes(filter);
+                var results = await Client.GetPushes(filter);
             }
             catch (Exception ex)
             {
@@ -281,7 +281,7 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesWithLimit()
+        public async void GetPushesWithLimit()
         {
             try
             {
@@ -290,7 +290,7 @@ namespace PushBulletSharp.Core.Tests
                     Limit = 1
                 };
 
-                var results = Client.GetPushes(filter);
+                var results = await Client.GetPushes(filter);
             }
             catch (Exception ex)
             {
@@ -309,7 +309,7 @@ namespace PushBulletSharp.Core.Tests
                     Title = "Push one",
                     Body = "This is the first message."
                 };
-                var response = Client.PushNote(request);
+                var response = await Client.PushNote(request);
 
                 // Get modified date of last push
                 var results = await Client.GetPushes(new PushResponseFilter() { Limit = 1 });
@@ -324,7 +324,7 @@ namespace PushBulletSharp.Core.Tests
                     Title = "Push two",
                     Body = secondBody
                 };
-                response = Client.PushNote(request);
+                response = await Client.PushNote(request);
 
                 // Get pushes since first one, + one millisecond because otherwise we can get back our previous received push...
                 results = await Client.GetPushes(new PushResponseFilter() { ModifiedDate = lastModified.AddMilliseconds(1)});
@@ -339,7 +339,7 @@ namespace PushBulletSharp.Core.Tests
         }
 
         [TestMethod]
-        public void GetPushesActive()
+        public async void GetPushesActive()
         {
             try
             {
@@ -348,7 +348,7 @@ namespace PushBulletSharp.Core.Tests
                     Active = true
                 };
 
-                var results = Client.GetPushes(filter);
+                var results = await Client.GetPushes(filter);
             }
             catch (Exception ex)
             {

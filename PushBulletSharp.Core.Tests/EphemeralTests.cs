@@ -47,11 +47,11 @@ namespace PushBulletSharp.Core.Tests
         /// This test is straight out of PushBullet's documentation. It's just an example of pushing an encrypted Ephemeral.
         /// </summary>
         [TestMethod]
-        public void EncryptedEphemeralTest()
+        public async void EncryptedEphemeralTest()
         {
             try
             {
-                var result = Client.PushEphemeral("{\"cat\":\"meow\"}", true);
+                var result = await Client.PushEphemeral("{\"cat\":\"meow\"}", true);
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an encrypted SMS message.
         /// </summary>
         [TestMethod]
-        public void EncryptedSMSTest()
+        public async void EncryptedSMSTest()
         {
             try
             {
@@ -83,7 +83,7 @@ namespace PushBulletSharp.Core.Tests
                     SourceUserIden = CurrentUser.Iden,
                     TargetDeviceIden = FirstActiveDevice.Iden
                 };
-                var result = Client.PushEphemeral(smsRequest, true);
+                var result = await Client.PushEphemeral(smsRequest, true);
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an unencrypted SMS message.
         /// </summary>
         [TestMethod]
-        public void UnencryptedSMSTest()
+        public async void UnencryptedSMSTest()
         {
             try
             {
@@ -116,7 +116,7 @@ namespace PushBulletSharp.Core.Tests
                     SourceUserIden = CurrentUser.Iden,
                     TargetDeviceIden = FirstActiveDevice.Iden
                 };
-                var result = Client.PushEphemeral(smsRequest);
+                var result = await Client.PushEphemeral(smsRequest);
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an encrypted Universal Copy Paste Ephemeral.
         /// </summary>
         [TestMethod]
-        public void EncryptedUniversalCopyPastTest()
+        public async void EncryptedUniversalCopyPastTest()
         {
             try
             {
@@ -138,7 +138,7 @@ namespace PushBulletSharp.Core.Tests
                     SourceDeviceIden = FirstActiveDevice.Iden,
                     SourceUserIden = CurrentUser.Iden
                 };
-                var result = Client.PushEphemeral(ucpRequest, true);
+                var result = await Client.PushEphemeral(ucpRequest, true);
             }
             catch (Exception ex)
             {
@@ -151,7 +151,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an unencrypted Universal Copy Paste Ephemeral.
         /// </summary>
         [TestMethod]
-        public void UnencryptedUniversalCopyPastTest()
+        public async void UnencryptedUniversalCopyPastTest()
         {
             try
             {
@@ -161,7 +161,7 @@ namespace PushBulletSharp.Core.Tests
                     SourceDeviceIden = FirstActiveDevice.Iden,
                     SourceUserIden = CurrentUser.Iden
                 };
-                var result = Client.PushEphemeral(ucpRequest);
+                var result = await Client.PushEphemeral(ucpRequest);
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an encrypted notification ephemeral.
         /// </summary>
         [TestMethod]
-        public void EncryptedNotificationTest()
+        public async void EncryptedNotificationTest()
         {
             try
             {
@@ -188,7 +188,7 @@ namespace PushBulletSharp.Core.Tests
                     SourceDeviceIden = FirstActiveDevice.Iden,
                     SourceUserIden = CurrentUser.Iden
                 };
-                var result = Client.PushEphemeral(notificationRequest, true);
+                var result = await Client.PushEphemeral(notificationRequest, true);
             }
             catch (Exception ex)
             {
@@ -201,7 +201,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an unencrypted notification ephemeral.
         /// </summary>
         [TestMethod]
-        public void UnencryptedNotificationTest()
+        public async void UnencryptedNotificationTest()
         {
             try
             {
@@ -216,7 +216,7 @@ namespace PushBulletSharp.Core.Tests
                     SourceDeviceIden = FirstActiveDevice.Iden,
                     SourceUserIden = CurrentUser.Iden
                 };
-                var result = Client.PushEphemeral(notificationRequest);
+                var result = await Client.PushEphemeral(notificationRequest);
             }
             catch (Exception ex)
             {
@@ -228,7 +228,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an encrypted dismissal ephemeral.
         /// </summary>
         [TestMethod]
-        public void EncryptedDismissalTest()
+        public async void EncryptedDismissalTest()
         {
             try
             {
@@ -238,7 +238,7 @@ namespace PushBulletSharp.Core.Tests
                     NotificationTag = null,
                     SourceUserIden = CurrentUser.Iden
                 };
-                var result = Client.PushEphemeral(dismissalRequest, true);
+                var result = await Client.PushEphemeral(dismissalRequest, true);
             }
             catch (Exception ex)
             {
@@ -251,7 +251,7 @@ namespace PushBulletSharp.Core.Tests
         /// This is an example of sending an unencrypted dismissal ephemeral.
         /// </summary>
         [TestMethod]
-        public void UnencryptedDismissalTest()
+        public async void UnencryptedDismissalTest()
         {
             try
             {
@@ -261,7 +261,7 @@ namespace PushBulletSharp.Core.Tests
                     NotificationTag = null,
                     SourceUserIden = CurrentUser.Iden
                 };
-                var result = Client.PushEphemeral(dismissalRequest);
+                var result = await Client.PushEphemeral(dismissalRequest);
             }
             catch (Exception ex)
             {
