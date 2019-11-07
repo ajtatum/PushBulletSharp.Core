@@ -10,6 +10,7 @@
     <Copyright>Copyright 2019</Copyright>
     <Authors>ajtatum</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageIconUrl>https://raw.githubusercontent.com/ajtatum/PushBulletSharp.Core/master/pushbulletsharp-logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
