@@ -12,8 +12,8 @@
             public const string Forbidden = "403 Forbidden - The access token is not valid for that request.";
             public const string NotFound = "404 Not Found - The requested item doesn't exist.";
             public const string TooManyRequests = "429 Too Many Requests - You have been ratelimited for making too many requests to the server.";
-            public const string FiveHundredXX = "{0} {1} - Something went wrong on Pushbullet's side.";
-            public const string Default = "{0} {1} - Error getting data from Pushbullet.";
+            public const string FiveHundredXX = "{0} {1} - Something went wrong on PushBullet's side.";
+            public const string Default = "{0} {1} - Error getting data from PushBullet.";
         }
 
         public class HttpMethods
