@@ -1,7 +1,7 @@
 PushBulletSharp.Core
 ===============
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2um6nsg5bub058nv/branch/master?svg=true)](https://ci.appveyor.com/project/ajtatum/babouextensions/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/2um6nsg5bub058nv/branch/master?svg=true)](https://ci.appveyor.com/project/ajtatum/babouextensions/branch/master) ![Nuget](https://img.shields.io/nuget/dt/PushBulletSharp.Core)
 
 
 This is a port of [PushbulletSharp](https://github.com/adamyeager/PushbulletSharp) by [adamyeager](https://github.com/adamyeager).
