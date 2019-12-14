@@ -20,3 +20,16 @@ For more documentation and examples, check out the [Wiki](https://github.com/ajt
 ## Subscribe
 
 [Subscribe to Updates via PushBullet](https://www.pushbullet.com/channel?tag=pushbulletsharpcore)
+
+---
+
+#### Developed by AJ Tatum
+
+[![ajt.io](https://img.icons8.com/clouds/50/000000/domain.png "ajt.io")](https://ajt.io/)
+[![Facebook @ajtatum](https://img.icons8.com/clouds/50/000000/facebook-new.png "Facebook @ajtatum")](https://www.facebook.com/ajtatum)
+[![Twitter @ajtatum](https://img.icons8.com/clouds/50/000000/twitter.png "Twitter @ajtatum")](https://twitter.com/ajtatum)
+[![LinkedIn @ajtatum](https://img.icons8.com/clouds/50/000000/linkedin.png "LinkedIn @ajtatum")](https://www.linkedin.com/in/ajtatum/)
+[![Spotify @ajtatum17](https://img.icons8.com/clouds/50/000000/spotify.png "Spotify @ajtatum17")](https://open.spotify.com/user/ajtatum17)
+[![GitHub @ajtatum](https://img.icons8.com/clouds/50/000000/github.png "GitHub @ajtatum")](https://github.com/ajtatum)
+
+[Icons by Icons8](https://icons8.com/)
